@@ -69,9 +69,10 @@ func computeD2(points []*data.Point, centroids []Coords) []float64 {
 func chooseByD2(distances []float64) int {
 	intervals := make([]float64, len(distances))
 
-	intervals[0] = distances[0]
-	for i := 1; i < len(distances); i++ {
-		intervals[i] = intervals[i-1] + distances[i]
+	sum := 0.0
+	for i := 0; i < len(distances); i++ {
+		sum += distances[i]
+		intervals[i] = sum
 	}
 	// intervals contains sorted values: they just increase
 	// as index in intervals gets bigger
@@ -82,7 +83,7 @@ func chooseByD2(distances []float64) int {
 	inInterval := rand.Float64() * intervals[len(intervals)-1]
 
 	for i := range intervals {
-		if inInterval < distances[i] {
+		if inInterval < intervals[i] {
 			return i
 		}
 	}
