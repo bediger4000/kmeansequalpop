@@ -5,6 +5,7 @@ import (
 	"math/rand"
 )
 
+// Coords holds X, Y cartesian coordinates of a cluster's centroid
 type Coords struct {
 	X float64
 	Y float64

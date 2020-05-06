@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+// ReadPoints reads textual 3-column data (population, x, y coords)
+// from a file named as the formal argument.
 func ReadPoints(filename string) ([]*Point, error) {
 	fin, err := os.Open(filename)
 	if err != nil {

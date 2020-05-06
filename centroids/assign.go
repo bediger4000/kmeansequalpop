@@ -57,6 +57,8 @@ func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Poin
 	return fullClusters
 }
 
+// PointDistance helps calculate which initial centroid in which
+// to place a data.Point.
 type PointDistance struct {
 	DistDiff  float64
 	Point     *data.Point
