@@ -6,7 +6,7 @@ genrand: cmd/genrand/genrand.go
 rtest: cmd/rtest/rtest.go
 	go build -o rtest cmd/rtest/rtest.go
 
-ctest: cmd/centroids/ctest.go centroids/initial.go
+ctest: cmd/centroids/ctest.go centroids/initial.go centroids/assign.go
 	go build -o ctest cmd/centroids/ctest.go
 
 10.dat: genrand
