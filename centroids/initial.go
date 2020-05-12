@@ -2,14 +2,9 @@ package centroids
 
 import (
 	"kmeansequalpop/data"
+	"math"
 	"math/rand"
 )
-
-// Coords holds X, Y cartesian coordinates of a cluster's centroid
-type Coords struct {
-	X float64
-	Y float64
-}
 
 // KmeansPPCentroids chooses k elements of points as initial centroids
 // via the k-means++ algorithm
@@ -46,12 +41,12 @@ func computeD2(points []*data.Point, centroids []Coords) []float64 {
 		dx := centroids[0].X - pt.X
 		dy := centroids[0].Y - pt.Y
 
-		minD2 := dx*dx + dy*dy
+		minD2 := math.Sqrt(dx*dx + dy*dy)
 
 		for j := 1; j < len(centroids); j++ {
 			dx = centroids[j].X - pt.X
 			dy = centroids[j].Y - pt.Y
-			D2 := dx*dx + dy*dy
+			D2 := math.Sqrt(dx*dx + dy*dy)
 			if D2 < minD2 {
 				minD2 = D2
 			}
