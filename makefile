@@ -1,4 +1,8 @@
+CENTROIDS =  centroids/types.go centroids/initial.go centroids/assign.go centroids/center.go
+DATA = data/types.go data/read.go
 
+kmeans: cmd/kmeans/kmeans.go $(CENTROIDS) $(DATA)
+	go build -o kmeans cmd/kmeans/kmeans.go
 
 genrand: cmd/genrand/genrand.go
 	go build -o genrand cmd/genrand/genrand.go
