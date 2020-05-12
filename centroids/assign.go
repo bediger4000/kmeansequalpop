@@ -15,7 +15,7 @@ func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Poin
 	}
 	desiredClusterPopulation := totalPopulace / float64(k)
 
-	distances := orderPointsByDistance(points, centers)
+	weightedDistances := orderPointsByDistance(points, centers)
 
 	clusters := make([][]*data.Point, k)
 	var fullClusters [][]*data.Point
@@ -26,16 +26,21 @@ func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Poin
 	// is full, then resort remaining objects, without taking the
 	// full cluster into account anymore.
 
-	for len(distances) > 0 {
+	for len(weightedDistances) > 0 {
 
-		for i := range distances {
+		for i := range weightedDistances {
 
-			minDistIdx := distances[i].minDistIndex()
-			pt := distances[i].Point
+			// Unlike weightedDistances, minDistIndex() does give
+			// back index of minimum distance to a centroid, because
+			// we're working on a single point.
+			minDistIdx := weightedDistances[i].minDistIndex()
+			pt := weightedDistances[i].Point
 
 			clusters[minDistIdx] = append(clusters[minDistIdx], pt)
 			clusterPopulations[minDistIdx] += pt.Pop
 			pt.Assigned = true
+			pt.CentroidX = centers[minDistIdx].X
+			pt.CentroidY = centers[minDistIdx].Y
 
 			if clusterPopulations[minDistIdx] >= desiredClusterPopulation {
 				fullClusters = append(fullClusters, clusters[minDistIdx])
@@ -48,7 +53,9 @@ func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Poin
 			}
 		}
 
-		distances = orderPointsByDistance(points, centers)
+		// re-sort remaining objects, without taking the
+		// full cluster into account.
+		weightedDistances = orderPointsByDistance(points, centers)
 	}
 
 	// One cluster will be left unfilled, probably?
@@ -57,28 +64,9 @@ func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Poin
 	return fullClusters
 }
 
-// PointDistance helps calculate which initial centroid in which
-// to place a data.Point.
-type PointDistance struct {
-	DistDiff  float64
-	Point     *data.Point
-	Distances []float64
-}
-
-type opSlice []*PointDistance
-
-func (ps opSlice) Len() int { return len(ps) }
-func (ps opSlice) Less(i, j int) bool {
-	if ps[i].DistDiff > ps[j].DistDiff {
-		return true
-	}
-	return false
-}
-func (ps opSlice) Swap(i, j int) { ps[i], ps[j] = ps[j], ps[i] }
-
 // orderPointsByDistance orders Points by the distance to their nearest
 // cluster minus distance to the farthest cluster (= biggest benefit of
-// best over worst assignment
+// best over worst assignment.
 func orderPointsByDistance(points []*data.Point, centers []Coords) []*PointDistance {
 	var orderedPoints []*PointDistance
 
@@ -96,7 +84,7 @@ func orderPointsByDistance(points []*data.Point, centers []Coords) []*PointDista
 		for centerIndex, center := range centers {
 			dx := center.X - pt.X
 			dy := center.Y - pt.Y
-			dist := dx*dx + dy*dy
+			dist := math.Sqrt(dx*dx + dy*dy)
 			pd.Distances[centerIndex] = dist
 			if dist > maxDist {
 				maxDist = dist
@@ -106,7 +94,7 @@ func orderPointsByDistance(points []*data.Point, centers []Coords) []*PointDista
 			}
 		}
 
-		pd.DistDiff = maxDist - minDist
+		pd.DistWeight = (maxDist - minDist)
 
 		orderedPoints = append(orderedPoints, pd)
 	}
@@ -121,10 +109,10 @@ func orderPointsByDistance(points []*data.Point, centers []Coords) []*PointDista
 func (pd *PointDistance) minDistIndex() int {
 	minDist := math.MaxFloat32
 	var minDistIdx int
-	for j, dist := range pd.Distances {
+	for i, dist := range pd.Distances {
 		if dist < minDist {
 			minDist = dist
-			minDistIdx = j
+			minDistIdx = i
 		}
 	}
 	return minDistIdx
