@@ -32,6 +32,10 @@ func ReadPoints(filename string) ([]*Point, error) {
 			continue
 		}
 
+		// precalculate moments around axes.
+		p.Xmoment = p.X * p.Pop
+		p.Ymoment = p.Y * p.Pop
+
 		points = append(points, &p)
 	}
 
