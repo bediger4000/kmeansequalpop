@@ -8,6 +8,9 @@ import (
 
 // CalculateCentroid conjures the (X,Y) position of the centroid
 // of a cluster of *data.Point. Population-weighted.
+// Uses pre-calculated moments about X and Y axes because we're
+// calculating the centroid of a set points, not the moment about
+// axes going through a centroid.
 func CalculateCentroid(points []*data.Point) *Coords {
 
 	sumXmoments := 0.0
