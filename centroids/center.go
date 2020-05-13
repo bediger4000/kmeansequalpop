@@ -67,7 +67,7 @@ func ClusterCenterDistances(points []*data.Point, centers []*Coords) []*PointDis
 				dist.CentroidY = center.Y
 			}
 
-			// dist.Distances = append(dist.Distances, distance)
+			dist.Distances = append(dist.Distances, distance)
 		}
 
 		ccdistances = append(ccdistances, dist)
