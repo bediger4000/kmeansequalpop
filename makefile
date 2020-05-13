@@ -1,4 +1,5 @@
-CENTROIDS =  centroids/types.go centroids/initial.go centroids/assign.go centroids/center.go
+CENTROIDS =  centroids/types.go centroids/initial.go centroids/assign.go \
+			 centroids/center.go centroids/count.go centroids/leavers.go
 DATA = data/types.go data/read.go
 
 kmeans: cmd/kmeans/kmeans.go $(CENTROIDS) $(DATA)
