@@ -29,6 +29,10 @@ func KmeansPPCentroids(points []*data.Point, k int) []Coords {
 
 	}
 
+	for i := range centroids {
+		centroids[i].ClusterIdx = i
+	}
+
 	return centroids
 }
 func computeD2(points []*data.Point, centroids []Coords) []float64 {
