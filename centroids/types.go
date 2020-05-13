@@ -17,8 +17,9 @@ type opSlice []*PointDistance
 
 // Coords holds X, Y cartesian coordinates of a cluster's centroid
 type Coords struct {
-	X float64
-	Y float64
+	X          float64
+	Y          float64
+	ClusterIdx int
 }
 
 func (ps opSlice) Len() int { return len(ps) }
