@@ -15,7 +15,6 @@ probability distribution where a point x is chosen with probability proportional
 
 ## Initialization
 
-
 1. Compute the desired cluster size, n/k.
 2. Initialize means, preferably with k-means++
 3. Order points by the distance to their nearest cluster minus distance to the
@@ -35,4 +34,12 @@ resort remaining objects, without taking the full cluster into account anymore.
    2. If the element was not changed, add to outgoing transfer list.
 5. If no more transfers were done (or max iteration threshold was reached), terminate
 
+This isn't terribly well-specified.
+I'll have to make decisions about various alternatives.
+Also, my points have a population, or a weight associated with them.
+I'll have to account for that.
 
+### Iteration Notes
+
+1. Compute current cluster means: have to include population in
+calculating the moment of each point around the X or Y axis.
