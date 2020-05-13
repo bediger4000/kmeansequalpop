@@ -8,18 +8,20 @@ import (
 
 // InitialAssign puts data.Point instances into their initial
 // cluster assignment.
-func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Point {
+func InitialAssign(points []*data.Point, clusterCentroids []Coords, k int) [][]*data.Point {
 	totalPopulace := 0.0
 	for i := range points {
 		totalPopulace += points[i].Pop
 	}
 	desiredClusterPopulation := totalPopulace / float64(k)
 
+	centers := make([]Coords, k)
+	copy(centers, clusterCentroids)
+
 	weightedDistances := orderPointsByDistance(points, centers)
 
 	clusters := make([][]*data.Point, k)
-	var fullClusters [][]*data.Point
-	// first index of clusters, clusters[i], connects to centers[i]
+	fullClusters := make([][]*data.Point, k)
 	clusterPopulations := make([]float64, k)
 
 	// Assign points to their preferred cluster until this cluster
@@ -39,11 +41,10 @@ func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Poin
 			clusters[minDistIdx] = append(clusters[minDistIdx], pt)
 			clusterPopulations[minDistIdx] += pt.Pop
 			pt.Assigned = true
-			pt.CentroidX = centers[minDistIdx].X
-			pt.CentroidY = centers[minDistIdx].Y
+			pt.CentroidIdx = centers[minDistIdx].ClusterIdx
 
 			if clusterPopulations[minDistIdx] >= desiredClusterPopulation {
-				fullClusters = append(fullClusters, clusters[minDistIdx])
+				fullClusters[centers[minDistIdx].ClusterIdx] = clusters[minDistIdx]
 
 				clusters = append(clusters[:minDistIdx], clusters[minDistIdx+1:]...)
 				centers = append(centers[:minDistIdx], centers[minDistIdx+1:]...)
@@ -58,8 +59,12 @@ func InitialAssign(points []*data.Point, centers []Coords, k int) [][]*data.Poin
 		weightedDistances = orderPointsByDistance(points, centers)
 	}
 
-	// One cluster will be left unfilled, probably?
-	fullClusters = append(fullClusters, clusters...)
+	// One cluster will be left
+	for i := range fullClusters {
+		if fullClusters[i] == nil {
+			fullClusters[i] = clusters[0]
+		}
+	}
 
 	return fullClusters
 }
@@ -116,4 +121,14 @@ func (pd *PointDistance) minDistIndex() int {
 		}
 	}
 	return minDistIdx
+}
+
+func Assign(points []*data.Point, k int) [][]*data.Point {
+	clusters := make([][]*data.Point, k)
+
+	for i := range points {
+		clusters[points[i].CentroidIdx] = append(clusters[points[i].CentroidIdx], points[i])
+	}
+
+	return clusters
 }
