@@ -123,7 +123,7 @@ func (pd *PointDistance) minDistIndex() int {
 	return minDistIdx
 }
 
-func Assign(points []*data.Point, k int) [][]*data.Point {
+func AssignToCluster(points []*data.Point, k int) [][]*data.Point {
 	clusters := make([][]*data.Point, k)
 
 	for i := range points {
